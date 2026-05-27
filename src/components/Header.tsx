@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Cross } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -36,6 +37,9 @@ const Header = () => {
               {link.label}
             </a>
           ))}
+          <Button asChild size="sm" variant="secondary" className="ml-2">
+            <Link to="/admin">Admin</Link>
+          </Button>
         </nav>
 
         {/* Mobile toggle */}
@@ -67,6 +71,11 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
+              <Button asChild size="sm" variant="secondary" className="w-fit">
+                <Link to="/admin" onClick={() => setIsOpen(false)}>
+                  Admin
+                </Link>
+              </Button>
             </div>
           </motion.nav>
         )}

@@ -1,18 +1,13 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-const galleryImages = [
-  { src: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600&h=400&fit=crop", alt: "Culto de adoração" },
-  { src: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=600&h=400&fit=crop", alt: "Grupo de jovens" },
-  { src: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=600&h=400&fit=crop", alt: "Estudo bíblico" },
-  { src: "https://images.unsplash.com/photo-1560439513-74b037a25d84?w=600&h=400&fit=crop", alt: "Ação social" },
-  { src: "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=600&h=400&fit=crop", alt: "Batismo" },
-  { src: "https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=600&h=400&fit=crop", alt: "Interior do templo" },
-];
+import { useSiteContent } from "@/context/site-content-context";
+import type { GalleryItem } from "@/lib/site-content";
 
 const GallerySection = () => {
-  const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null);
+  const { galleryImages } = useSiteContent();
+  const visibleImages = galleryImages.filter((image) => image.enabled);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -31,28 +26,34 @@ const GallerySection = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {galleryImages.map((image, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative group cursor-pointer overflow-hidden rounded-lg aspect-[3/2]"
-              onClick={() => setSelectedImage(image)}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-navy-deep/0 group-hover:bg-navy-deep/40 transition-colors duration-300 flex items-center justify-center">
-                <span className="text-primary-foreground font-body text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {image.alt}
-                </span>
-              </div>
-            </motion.div>
-          ))}
+          {visibleImages.length > 0 ? (
+            visibleImages.map((image, index) => (
+              <motion.div
+                key={image.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative group cursor-pointer overflow-hidden rounded-lg aspect-[3/2]"
+                onClick={() => setSelectedImage(image)}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-navy-deep/0 group-hover:bg-navy-deep/40 transition-colors duration-300 flex items-center justify-center">
+                  <span className="text-primary-foreground font-body text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {image.alt}
+                  </span>
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <div className="rounded-lg border border-dashed border-border/70 p-8 text-center text-sm text-muted-foreground sm:col-span-2 lg:col-span-3">
+              Nenhuma foto ativa na galeria no momento.
+            </div>
+          )}
         </div>
       </div>
 
@@ -60,7 +61,11 @@ const GallerySection = () => {
         <DialogContent className="max-w-4xl p-0 overflow-hidden bg-card border-border">
           {selectedImage && (
             <img
-              src={selectedImage.src.replace("w=600&h=400", "w=1200&h=800")}
+              src={
+                selectedImage.src.includes("w=600&h=400")
+                  ? selectedImage.src.replace("w=600&h=400", "w=1200&h=800")
+                  : selectedImage.src
+              }
               alt={selectedImage.alt}
               className="w-full h-auto"
             />

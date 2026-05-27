@@ -1,18 +1,11 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Users, Music, BookOpen, Heart, Baby, Globe } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
-const ministries = [
-  { icon: Users, title: "Jovens", description: "Encontros semanais com louvor, palavra e comunhão para jovens de 15 a 30 anos." },
-  { icon: Music, title: "Louvor", description: "Ministério de adoração com ensaios e participação nos cultos e eventos especiais." },
-  { icon: BookOpen, title: "Escola Bíblica", description: "Estudos aprofundados da Palavra para todas as idades, aos domingos pela manhã." },
-  { icon: Heart, title: "Ação Social", description: "Projetos de auxílio a comunidades carentes com alimentos, roupas e capacitação." },
-  { icon: Baby, title: "Crianças", description: "Programação especial para crianças de 0 a 12 anos durante os cultos." },
-  { icon: Globe, title: "Missões", description: "Apoio a missionários nacionais e internacionais em 5 países diferentes." },
-];
+import { ministryIconMap } from "@/lib/site-content";
+import { useSiteContent } from "@/context/site-content-context";
 
 const MinistriesSection = () => {
+  const { ministries } = useSiteContent();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -32,10 +25,10 @@ const MinistriesSection = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {ministries.map((ministry, index) => {
-            const Icon = ministry.icon;
+            const Icon = ministryIconMap[ministry.iconName];
             return (
               <motion.div
-                key={ministry.title}
+                key={ministry.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
