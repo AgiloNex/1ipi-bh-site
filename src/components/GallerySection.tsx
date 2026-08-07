@@ -1,28 +1,74 @@
-import { useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useSiteContent } from "@/context/site-content-context";
-import type { GalleryItem } from "@/lib/site-content";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+
+const FALLBACK_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%231e2a3a' width='400' height='300'/%3E%3Ctext fill='%23a0aec0' font-family='sans-serif' font-size='16' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EImagem indisponível%3C/text%3E%3C/svg%3E";
+
+const isValidUrl = (url: string) => {
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
 
 const GallerySection = () => {
   const { galleryImages } = useSiteContent();
   const visibleImages = galleryImages.filter((image) => image.enabled);
-  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [erroredImages, setErroredImages] = useState<Set<string>>(new Set());
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const openLightbox = (index: number) => setSelectedIndex(index);
+  const closeLightbox = useCallback(() => setSelectedIndex(null), []);
+
+  const handleImgError = (id: string) => {
+    setErroredImages((prev) => new Set(prev).add(id));
+  };
+
+  const goToPrev = useCallback(() => {
+    setSelectedIndex((current) => {
+      if (current === null) return null;
+      return current > 0 ? current - 1 : visibleImages.length - 1;
+    });
+  }, [visibleImages.length]);
+
+  const goToNext = useCallback(() => {
+    setSelectedIndex((current) => {
+      if (current === null) return null;
+      return current < visibleImages.length - 1 ? current + 1 : 0;
+    });
+  }, [visibleImages.length]);
+
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "Escape": closeLightbox(); break;
+        case "ArrowLeft": goToPrev(); break;
+        case "ArrowRight": goToNext(); break;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selectedIndex, closeLightbox, goToPrev, goToNext]);
 
   return (
     <section id="galeria" className="section-padding bg-background">
       <div className="container-church">
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <p className="text-gold font-body text-sm uppercase tracking-[0.2em] mb-2">Momentos Especiais</p>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold text-foreground">Galeria</h2>
+          <h2 className="font-display text-4xl sm:text-5xl font-bold text-foreground">
+            Galeria
+          </h2>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -32,18 +78,19 @@ const GallerySection = () => {
                 key={image.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative group cursor-pointer overflow-hidden rounded-lg aspect-[3/2]"
-                onClick={() => setSelectedImage(image)}
+                transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                className="gallery-vitral-hover relative group cursor-pointer overflow-hidden rounded-lg aspect-[3/2]"
+                onClick={() => openLightbox(index)}
               >
                 <img
-                  src={image.src}
+                  src={erroredImages.has(image.id) ? FALLBACK_IMG : (isValidUrl(image.src) ? image.src : FALLBACK_IMG)}
                   alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   loading="lazy"
+                  onError={() => handleImgError(image.id)}
                 />
-                <div className="absolute inset-0 bg-navy-deep/0 group-hover:bg-navy-deep/40 transition-colors duration-300 flex items-center justify-center">
-                  <span className="text-primary-foreground font-body text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-4">
+                  <span className="text-primary-foreground font-body text-sm font-medium">
                     {image.alt}
                   </span>
                 </div>
@@ -57,21 +104,68 @@ const GallerySection = () => {
         </div>
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-card border-border">
-          {selectedImage && (
-            <img
-              src={
-                selectedImage.src.includes("w=600&h=400")
-                  ? selectedImage.src.replace("w=600&h=400", "w=1200&h=800")
-                  : selectedImage.src
-              }
-              alt={selectedImage.alt}
-              className="w-full h-auto"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <AnimatePresence>
+        {selectedIndex !== null && visibleImages[selectedIndex] && (
+          <motion.div
+            key="lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
+            onClick={closeLightbox}
+            role="dialog"
+            aria-modal="true"
+            aria-label={visibleImages[selectedIndex].alt}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {visibleImages.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrev}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 text-primary-foreground rounded-full p-3 backdrop-blur-sm transition-colors z-10"
+                    aria-label="Anterior"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 text-primary-foreground rounded-full p-3 backdrop-blur-sm transition-colors z-10"
+                    aria-label="Próxima"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              )}
+
+              <img
+                src={erroredImages.has(visibleImages[selectedIndex].id) ? FALLBACK_IMG : (isValidUrl(visibleImages[selectedIndex].src) ? visibleImages[selectedIndex].src : FALLBACK_IMG)}
+                alt={visibleImages[selectedIndex].alt}
+                className="max-w-full max-h-[85vh] w-auto h-auto rounded-lg shadow-2xl"
+                onError={() => handleImgError(visibleImages[selectedIndex].id)}
+              />
+              <button
+                onClick={closeLightbox}
+                className="absolute -top-3 -right-3 bg-background rounded-full p-2 shadow-lg hover:bg-secondary transition-colors"
+                aria-label="Fechar"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-primary-foreground/70 font-body text-sm text-nowrap">
+                {visibleImages[selectedIndex].alt}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

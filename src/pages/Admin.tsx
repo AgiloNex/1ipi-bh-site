@@ -72,13 +72,23 @@ const Admin = () => {
   };
 
   const handleAddImage = () => {
-    if (!newImage.src.trim() || !newImage.alt.trim()) {
+    const src = newImage.src.trim();
+    const alt = newImage.alt.trim();
+
+    if (!src || !alt) return;
+
+    try {
+      const url = new URL(src);
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return;
+      }
+    } catch {
       return;
     }
 
     addGalleryImage({
-      src: newImage.src.trim(),
-      alt: newImage.alt.trim(),
+      src,
+      alt,
       enabled: newImage.enabled,
     });
 
