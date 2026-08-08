@@ -100,7 +100,7 @@ const Admin = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main id="conteudo-principal" className="min-h-screen bg-background">
       <section className="border-b border-border/60 bg-gradient-to-br from-primary/10 via-background to-secondary/40">
         <div className="container-church px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

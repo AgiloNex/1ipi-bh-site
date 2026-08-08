@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import LiveCountdown from "@/components/LiveCountdown";
 import heroImage from "@/assets/hero-church.jpg";
 
 const HeroSection = () => {
@@ -11,7 +12,7 @@ const HeroSection = () => {
     <section
       ref={ref}
       id="inicio"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col overflow-hidden"
       style={{
         clipPath: isInView
           ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
@@ -28,64 +29,79 @@ const HeroSection = () => {
         <div className="absolute inset-0 stained-glass" />
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
 
-      <div className="relative z-20 text-center container-church px-4">
-        <AnimatePresence>
-          {isInView && (
-            <>
-              <motion.p
-                initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="text-gold font-body text-sm uppercase tracking-[0.25em] mb-4"
-              >
-                Bem-vindo à
-              </motion.p>
-              <motion.h1
-                initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight"
-                style={{ textWrap: "balance" }}
-              >
-                Igreja
-                <br />
-                Vida Nova
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                className="text-primary-foreground/85 font-body text-lg sm:text-xl max-w-2xl mx-auto mb-10"
-              >
-                Um lugar de fé, esperança e comunhão. Venha fazer parte da nossa família.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.1 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center"
-              >
-                <Button
-                  size="lg"
-                  className="bg-gold text-accent-foreground hover:bg-gold-light font-body font-semibold px-8"
-                  asChild
+      <div className="relative z-20 flex-1 flex items-center justify-center container-church px-4 pt-20 pb-2">
+        <div className="text-center">
+          <AnimatePresence>
+            {isInView && (
+              <>
+                <motion.p
+                  initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display text-xl sm:text-2xl text-gold mb-4"
                 >
-                  <a href="#contato">Entre em Contato</a>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body px-8"
-                  asChild
+                  Bem-vindo à
+                </motion.p>
+                <motion.h1
+                  initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight"
+                  style={{ textWrap: "balance" }}
                 >
-                  <a href="#sobre">Conheça Nossa História</a>
-                </Button>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+                  Igreja
+                  <br />
+                  Vida Nova
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-primary-foreground/85 font-body text-lg sm:text-xl max-w-2xl mx-auto mb-10"
+                >
+                  Um lugar de fé, esperança e comunhão. Venha fazer parte da nossa família.
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.1 }}
+                  className="flex flex-col sm:flex-row gap-4 justify-center"
+                >
+                  <Button
+                    size="lg"
+                    className="bg-gold text-accent-foreground hover:bg-gold-light font-body font-semibold px-8"
+                    asChild
+                  >
+                    <a href="#contato">Entre em Contato</a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body px-8"
+                    asChild
+                  >
+                    <a href="#sobre">Conheça Nossa História</a>
+                  </Button>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="relative z-20 px-4 pb-8 sm:pb-10">
+        <div className="container-church">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 1.35, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto max-w-2xl rounded-2xl border border-gold/25 bg-navy-deep/75 backdrop-blur-md px-6 py-5 shadow-lg"
+          >
+            <LiveCountdown />
+          </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -75,7 +75,7 @@ const PrayerRequestSection = () => {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gold/10 mb-4">
-            <Sparkles className="h-6 w-6 text-gold" />
+            <Sparkles className="h-6 w-6 text-gold-ink" />
           </div>
           <h2 className="font-display text-4xl sm:text-5xl font-bold text-foreground">Pedido de Oração</h2>
           <p className="font-body text-muted-foreground mt-4 max-w-lg mx-auto">
@@ -98,7 +98,7 @@ const PrayerRequestSection = () => {
                   <FormItem>
                     <FormLabel className="font-body text-card-foreground">Seu Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder="Como podemos te chamar?" {...field} className="font-body" />
+                      <Input placeholder="Como podemos te chamar?" autoComplete="name" {...field} className="font-body" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -127,7 +127,7 @@ const PrayerRequestSection = () => {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="w-full bg-gradient-to-r from-gold to-gold-light text-accent-foreground hover:brightness-110 font-body font-semibold shadow-lg shadow-gold/20"
+                className="w-full bg-gold text-accent-foreground hover:bg-gold-light font-body font-semibold"
                 size="lg"
               >
                 {form.formState.isSubmitting ? (

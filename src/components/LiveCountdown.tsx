@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CalendarClock } from "lucide-react";
 
 type ServiceTime = {
   day: number;
@@ -64,7 +65,7 @@ const CountdownUnit = ({ value, label }: { value: number; label: string }) => (
     <span className="font-display text-2xl sm:text-3xl font-bold text-gold tabular-nums leading-none">
       {String(value).padStart(2, "0")}
     </span>
-    <span className="font-body text-[10px] uppercase tracking-[0.15em] text-primary-foreground/60 mt-1">
+    <span className="font-body text-[10px] uppercase tracking-[0.15em] text-primary-foreground/70 mt-1">
       {label}
     </span>
   </div>
@@ -86,17 +87,24 @@ const LiveCountdown = () => {
 
   return (
     <div className="flex flex-col items-center gap-3">
+      <div className="flex items-center gap-2.5">
+        <CalendarClock className="h-5 w-5 text-gold" />
+        <span className="font-display text-lg sm:text-xl font-semibold text-primary-foreground">
+          Próximo Culto
+        </span>
+      </div>
+
       <div className="flex items-center gap-4">
         <CountdownUnit value={countdown.d} label="dias" />
-        <span className="text-primary-foreground/30 font-display text-2xl">:</span>
+        <span className="text-primary-foreground/40 font-display text-2xl">:</span>
         <CountdownUnit value={countdown.h} label="horas" />
-        <span className="text-primary-foreground/30 font-display text-2xl">:</span>
+        <span className="text-primary-foreground/40 font-display text-2xl">:</span>
         <CountdownUnit value={countdown.m} label="min" />
-        <span className="text-primary-foreground/30 font-display text-2xl">:</span>
+        <span className="text-primary-foreground/40 font-display text-2xl">:</span>
         <CountdownUnit value={countdown.s} label="seg" />
       </div>
-      <p className="font-body text-xs text-primary-foreground/50 uppercase tracking-[0.15em]">
-        Próximo culto: {nextService.label} às {nextService.time}
+      <p className="font-body text-sm text-primary-foreground/80">
+        {nextService.label} às {nextService.time}
       </p>
     </div>
   );

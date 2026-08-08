@@ -23,7 +23,7 @@ const TimelineItem = ({ item, index }: { item: typeof timeline[0]; index: number
       className={`flex items-center gap-6 ${isLeft ? "md:flex-row" : "md:flex-row-reverse"} flex-col md:flex-row`}
     >
       <div className={`flex-1 ${isLeft ? "md:text-right" : "md:text-left"} text-center`}>
-        <span className="text-gold font-display text-2xl font-bold tabular-nums">{item.year}</span>
+        <span className="text-gold-ink font-display text-2xl font-bold tabular-nums">{item.year}</span>
         <h3 className="font-display text-xl font-semibold text-foreground mt-1">{item.title}</h3>
         <p className="font-body text-muted-foreground mt-2 max-w-sm mx-auto md:mx-0">{item.description}</p>
       </div>

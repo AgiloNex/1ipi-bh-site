@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Send } from "lucide-react";
 
@@ -23,14 +23,23 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>;
 
-const interesses = [
-  "Conhecer a Igreja",
-  "Participar de um Ministério",
-  "Escola Bíblica",
-  "Ação Social",
-  "Casamento",
-  "Batismo",
-  "Outro",
+const interesseGroups = [
+  {
+    label: "Comunhão",
+    options: ["Conhecer a Igreja", "Participar de um Ministério"],
+  },
+  {
+    label: "Crescimento Espiritual",
+    options: ["Escola Bíblica", "Batismo"],
+  },
+  {
+    label: "Eventos e Serviço",
+    options: ["Casamento", "Ação Social"],
+  },
+  {
+    label: "Outros",
+    options: ["Outro"],
+  },
 ];
 
 const ContactSection = () => {
@@ -107,7 +116,7 @@ const ContactSection = () => {
                   <FormItem>
                     <FormLabel className="font-body text-card-foreground">Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder="Seu nome completo" {...field} className="font-body" />
+                      <Input placeholder="Seu nome completo" autoComplete="name" {...field} className="font-body" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,7 +130,7 @@ const ContactSection = () => {
                   <FormItem>
                     <FormLabel className="font-body text-card-foreground">E-mail</FormLabel>
                     <FormControl>
-                      <Input placeholder="seu@email.com" type="email" {...field} className="font-body" />
+                      <Input placeholder="seu@email.com" type="email" autoComplete="email" {...field} className="font-body" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,10 +150,17 @@ const ContactSection = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {interesses.map((item) => (
-                          <SelectItem key={item} value={item} className="font-body">
-                            {item}
-                          </SelectItem>
+                        {interesseGroups.map((group) => (
+                          <SelectGroup key={group.label}>
+                            <SelectLabel className="text-xs font-medium text-muted-foreground">
+                              {group.label}
+                            </SelectLabel>
+                            {group.options.map((item) => (
+                              <SelectItem key={item} value={item} className="font-body">
+                                {item}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
                         ))}
                       </SelectContent>
                     </Select>

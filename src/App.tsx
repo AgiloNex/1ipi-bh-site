@@ -18,6 +18,9 @@ const App = () => (
       <Sonner />
       <SiteContentProvider>
         <BrowserRouter>
+          <a href="#conteudo-principal" className="skip-link">
+            Pular para o conteúdo
+          </a>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin" element={<AdminAuthGate><Admin /></AdminAuthGate>} />

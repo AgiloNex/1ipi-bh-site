@@ -12,17 +12,6 @@ const MinistriesSection = () => {
 
   return (
     <section id="ministerios" className="section-padding bg-secondary relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 50% 50%, hsl(var(--gold)) 0.5px, transparent 0.5px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
-      </div>
-
       <div className="container-church relative">
         <motion.div
           ref={ref}
@@ -66,7 +55,7 @@ const MinistriesSection = () => {
                 >
                   <div className="group w-full lg:w-56 bg-card/80 backdrop-blur-sm rounded-xl p-5 border border-border/40 hover:border-gold/30 transition-all duration-500 hover:shadow-[0_0_12px_-2px_hsl(var(--gold)/0.15)]">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 group-hover:bg-gold/20 transition-colors duration-500">
-                      <Icon className="h-6 w-6 text-primary group-hover:text-gold transition-colors duration-500" />
+                      <Icon className="h-6 w-6 text-primary group-hover:text-gold-ink transition-colors duration-500" />
                     </div>
                     <h3 className="font-display text-lg font-semibold text-card-foreground mb-1.5 text-center">
                       {ministry.title}

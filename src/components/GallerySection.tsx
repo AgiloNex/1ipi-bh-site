@@ -22,6 +22,10 @@ const GallerySection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const touchStartX = useRef<number | null>(null);
+
   const openLightbox = (index: number) => setSelectedIndex(index);
   const closeLightbox = useCallback(() => setSelectedIndex(null), []);
 
@@ -55,6 +59,55 @@ const GallerySection = () => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [selectedIndex, closeLightbox, goToPrev, goToNext]);
+
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    closeButtonRef.current?.focus();
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusables = Array.from(
+      dialog.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusables.length === 0) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    dialog.addEventListener("keydown", handleTab);
+    return () => dialog.removeEventListener("keydown", handleTab);
+  }, [selectedIndex]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || visibleImages.length <= 1) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX < 0) goToNext();
+      else goToPrev();
+    }
+    touchStartX.current = null;
+  };
 
   return (
     <section id="galeria" className="section-padding bg-background">
@@ -108,6 +161,7 @@ const GallerySection = () => {
         {selectedIndex !== null && visibleImages[selectedIndex] && (
           <motion.div
             key="lightbox"
+            ref={dialogRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -125,19 +179,21 @@ const GallerySection = () => {
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
             >
               {visibleImages.length > 1 && (
                 <>
                   <button
                     onClick={goToPrev}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 text-primary-foreground rounded-full p-3 backdrop-blur-sm transition-colors z-10"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 text-primary-foreground rounded-full p-3 min-h-[48px] min-w-[48px] flex items-center justify-center backdrop-blur-sm transition-colors z-10"
                     aria-label="Anterior"
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                   <button
                     onClick={goToNext}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 text-primary-foreground rounded-full p-3 backdrop-blur-sm transition-colors z-10"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 text-primary-foreground rounded-full p-3 min-h-[48px] min-w-[48px] flex items-center justify-center backdrop-blur-sm transition-colors z-10"
                     aria-label="Próxima"
                   >
                     <ChevronRight className="h-6 w-6" />
@@ -152,11 +208,12 @@ const GallerySection = () => {
                 onError={() => handleImgError(visibleImages[selectedIndex].id)}
               />
               <button
+                ref={closeButtonRef}
                 onClick={closeLightbox}
-                className="absolute -top-3 -right-3 bg-background rounded-full p-2 shadow-lg hover:bg-secondary transition-colors"
+                className="absolute -top-3 -right-3 bg-background rounded-full h-11 w-11 flex items-center justify-center shadow-lg hover:bg-secondary transition-colors"
                 aria-label="Fechar"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
 
               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-primary-foreground/70 font-body text-sm text-nowrap">
