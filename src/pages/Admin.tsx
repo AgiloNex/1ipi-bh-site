@@ -72,13 +72,23 @@ const Admin = () => {
   };
 
   const handleAddImage = () => {
-    if (!newImage.src.trim() || !newImage.alt.trim()) {
+    const src = newImage.src.trim();
+    const alt = newImage.alt.trim();
+
+    if (!src || !alt) return;
+
+    try {
+      const url = new URL(src);
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return;
+      }
+    } catch {
       return;
     }
 
     addGalleryImage({
-      src: newImage.src.trim(),
-      alt: newImage.alt.trim(),
+      src,
+      alt,
       enabled: newImage.enabled,
     });
 
@@ -90,7 +100,7 @@ const Admin = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main id="conteudo-principal" className="min-h-screen bg-background">
       <section className="border-b border-border/60 bg-gradient-to-br from-primary/10 via-background to-secondary/40">
         <div className="container-church px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
